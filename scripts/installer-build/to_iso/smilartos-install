@@ -1,0 +1,22 @@
+#! /bin/sh
+# /etc/init.d/smilartos-install
+
+# The following part always gets executed.
+echo "This part always gets executed"
+
+# The following part carries out specific functions depending on arguments.
+case "$1" in
+  start)
+    echo "Starting smilartos-install"
+    /usr/bin/python2.7 /var/lib/smilart_srv/scripts/smilartos-install.py
+    ;;
+  stop)
+    echo "Stopping smilartos-install"
+    ;;
+  *)
+    echo "Usage: /etc/init.d/smilartos-install {start|stop}"
+    exit 1
+    ;;
+esac
+
+exit 0

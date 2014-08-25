@@ -1,0 +1,10 @@
+.settings/
+.metadata/
+.project
+.classpath
+*.log
+**/logs
+*.exp
+*.lib
+*.pyc
+.pydevproject
