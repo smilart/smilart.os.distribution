@@ -5,22 +5,28 @@ set -vx
 
 
 SOURCE=$1 # Path to image-dir
-DEVICE=$2
-TMP_LOCAL_DIR=/tmp/to_usb/image
+PASSWD=$2
+DEVICE=$3
+TMP_LOCAL_DIR=/tmp/to_usb
 
-syslinux -i /dev/$DEVICE
-# ? of=/dev/sdf ?
-# dd if=/usr/lib/syslinux/mbr.bin of=/dev/sdf conv=notrunc bs=440 count=1
-dd if=/usr/lib/syslinux/mbr.bin of=/dev/$DEVICE conv=notrunc bs=440 count=1
-mount /dev/$DEVICE /mnt/usb
+syslinux -i "$DEVICE"1
+#dd if=/usr/lib/syslinux/mbr.bin of=$DEVICE conv=notrunc bs=440 count=1
+dd if=/usr/sahre/syslinux/mbr.bin of=$DEVICE conv=notrunc bs=440 count=1
+[[ ! -d /mnt/usb ]] && mkdir -pv /mnt/usb
+mount  "$DEVICE"1 /mnt/usb
 
-[[ -d $TMP_LOCAL_DIR ]] && rm -rv $TMP_LOACL_DIR
+
+
+[[ -d $TMP_LOCAL_DIR ]] && rm -rv $TMP_LOCACL_DIR
 mkdir -pv $TMP_LOCAL_DIR
-rsync $TMP_LOCAL_DIR $SOURCE
+#rsync -rv root@192.168.1.52:/home/smilart.os.distribution/scripts/installer-build/live_boot/image /tmp/111
+#sshpass -p "smilart" rsync -rv root@192.168.1.52:/home/smilart.os.distribution/scripts/installer-build/live_boot/image /tmp/111
+sshpass -p $PASSWD rsync -rv  $SOURCE $TMP_LOCAL_DIR
 
-cp $TMP_LOCAL_DIR/isolinux/menu.c32 /mnt/usb/ && 
-cp $TMP_LOCAL_DIR/isolinux/hdt.c32 /mnt/usb/ && 
-cp $TMP_LOCAL_DIR/live/memtest /mnt/usb/memtest && 
-cp $TMP_LOCAL_DIR/isolinux/isolinux.cfg /mnt/usb/syslinux.cfg && 
-rsync -rv $TMP_LOCAL_DIR/live /mnt/usb/
+cp $TMP_LOCAL_DIR/image/isolinux/menu.c32 /mnt/usb/ && 
+cp $TMP_LOCAL_DIR/image/isolinux/hdt.c32 /mnt/usb/ && 
+cp $TMP_LOCAL_DIR/image/live/memtest /mnt/usb/memtest && 
+cp $TMP_LOCAL_DIR/image/isolinux/isolinux.cfg /mnt/usb/syslinux.cfg && 
+rsync -rv $TMP_LOCAL_DIR/image/live /mnt/usb/
 
+umount /mnt/usb

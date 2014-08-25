@@ -49,4 +49,5 @@ cp /boot/memtest86+.bin image/live/memtest
 
 cd image && 
 genisoimage -rational-rock -volid "Debian Live" -cache-inodes -joliet -full-iso9660-filenames -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -output ../debian-live-$ARCH.iso . && 
+isohybrid ../debian-live-$ARCH.iso && 
 cd ..
