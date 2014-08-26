@@ -1,7 +1,7 @@
 #!/bin/bash
 
 set -vx
-#apt-get install debootstrap syslinux squashfs-tools genisoimage memtest86+ rsync gcc
+#apt-get install debootstrap syslinux squashfs-tools genisoimage memtest86+ rsync gcc git-core
 if [ -z "$1" ]; then
     ARCH="amd64"
 else
@@ -28,6 +28,12 @@ mkdir -p chroot/var/lib/smilart_srv/scripts && cp -pv ../../smilartos-install/sm
 cp -pv ../to_iso/smilartos-install chroot/etc/init.d/smilartos-install
 
 wget https://pypi.python.org/packages/source/u/urwid/urwid-1.2.1.tar.gz -P chroot/tmp
+
+[[ -d /tmp/licenseencryptiontool ]] && rm -r /tmp/licenseencryptiontool
+(cd /tmp && git clone git@bitbucket.org:smilart/licenseencryptiontool.git)
+(cd /tmp/licenseencryptiontool/nodeinfo && make)
+mkdir -p chroot/var/lib/smilart_srv/utils && cp -pv /tmp/licenseencryptiontool/nodeinfo/dist/Debug/GNU-Linux-x86/nodeinfo chroot/var/lib/smilart_srv/utils/nodeinfo
+
 
 chroot chroot /bin/bash -c "/tmp/in_chroot.sh $ARCH" 
 
