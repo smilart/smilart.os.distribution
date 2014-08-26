@@ -1,9 +1,7 @@
 #! /bin/bash
 
-# $1 -- ip_address
-# $2 -- mask
-# $3 -- gateway
-# $4 -- dns-server
+# usage:
+# config_network --ip[=]<value> --mask[=]<value> --gateway[=]<value> --dns[=]<value>
 
 #set -vx
 # A string with command options
@@ -16,7 +14,7 @@ arguments=($options)
 index=0
 
 declare -A longoptspec
-longoptspec=( [ip]=1 [mask]=1 [geteway]=1 [dns]=1 ) #use associative array to declare how many arguments a long option expects, in this case we declare that loglevel expects/has one argument, long options that aren't listed i n this way will have zero arguments by default
+longoptspec=( [ip]=1 [mask]=1 [gateway]=1 [dns]=1 ) #use associative array to declare how many arguments a long option expects, in this case we declare that loglevel expects/has one argument, long options that aren't listed i n this way will have zero arguments by default
 optspec=":h-:"
 while getopts "$optspec" opt; do
 while true; do
@@ -40,14 +38,14 @@ while true; do
         mask)
           MASK=$OPTARG
             ;;
-        geteway)
-          GETEWAY=$OPTARG
+        gateway)
+          GATEWAY=$OPTARG
             ;;
         dns)
           DNS=$OPTARG
             ;;
         h|help)
-            echo "usage: $0 --ip[=]<value> --mask[=]<value> --geteway[=]<value> --dns[=]<value>" >&2
+            echo "usage: $0 --ip[=]<value> --mask[=]<value> --gateway[=]<value> --dns[=]<value>" >&2
             exit 2
             ;;
     esac
@@ -56,5 +54,5 @@ done
 
 ifconfig  eth0 $IP netmask $MASK
 ifconfig lo 127.0.0.1
-route add default gw $GETEWAY
+route add default gw $GATEWAY
 echo "nameserver $DNS" >> /etc/resolv.conf
