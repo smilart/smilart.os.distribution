@@ -26,6 +26,7 @@ cp -pv ../to_iso/inittab chroot/etc/inittab
 gcc ../to_iso/autologin.c -o chroot/usr/local/sbin/autologin
 mkdir -p chroot/var/lib/smilart_srv/scripts && cp -pv ../../smilartos-install/smilartos-install.py chroot/var/lib/smilart_srv/scripts/smilartos-install.py && cp -pv ../to_iso/config_network.sh chroot/var/lib/smilart_srv/scripts/config_network.sh
 cp -pv ../to_iso/smilartos-install chroot/etc/init.d/smilartos-install
+cp -pv ../to_iso/after_install_to_xen.sh chroot/var/lib/smilart_srv/scriptsafter_install_to_xen.sh
 
 wget https://pypi.python.org/packages/source/u/urwid/urwid-1.2.1.tar.gz -P chroot/tmp
 
