@@ -25,6 +25,9 @@ linux-image-3.2.0-4-$ARCH live-boot \
 net-tools wireless-tools wpagui tcpdump wget ca-certificates openssh-server openssh-client iputils-ping inetutils-tools nginx \
 pciutils usbutils gparted ntfsprogs hfsprogs rsync dosfstools syslinux partclone nano pv python2.7 python2.7-dev mc bzip2 parted
 
+export DEBIAN_FRONTEND=noninteractive
+apt-get -q -y install console-cyrillic
+
 tar -xzf /tmp/urwid-1.2.1.tar.gz -C /tmp
 (cd /tmp/urwid-1.2.1 && /usr/bin/python2.7 setup.py install)
 mkdir -pv /var/lib/smilart_srv/coreos/amd64-usr/current

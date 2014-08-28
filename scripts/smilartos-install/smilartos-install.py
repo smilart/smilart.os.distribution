@@ -1,6 +1,7 @@
+# -*- coding: utf-8 -*-
 import urwid
 
-choices = u'Install Exit'.split()
+choices = 'Install Exit Привет'.split()
 
 def menu(title, choices):
     body = [urwid.Text(title), urwid.Divider()]
