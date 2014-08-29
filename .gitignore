@@ -8,3 +8,5 @@
 *.lib
 *.pyc
 .pydevproject
+scripts/installer-build/live_boot
+
