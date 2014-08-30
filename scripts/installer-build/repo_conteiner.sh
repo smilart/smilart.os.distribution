@@ -1,36 +1,55 @@
 #! /bin/bash
 
+#apt-get install docker.io
+set -vx
+
+SCM="git@github.com:smilart"
+
+declare -A CONT
+CONT[docker.smilart_base]="1.0"
+CONT[docker.java]="1.7u60"
+CONT[docker.zookeeper]="3.4.6"
+CONT[docker.osgi]="4.4.1"
+CONT[docker.mongodb]="2.4.10"
+CONT[docker.rabbitmq]="3.3.5-1"
+CONT[docker.service]="1.0"
+CONT[docker.samba]="1.0"
+
+if [ -z "$1" ]; then
+    BUILD_DIR="docker"
+else
+    BUILD_DIR=$1
+fi
+
+if [ -z "$2" ]; then
+    TARGET_DIR="chroot/var/lib/smilart_srv/repos"
+else
+    TARGET_DIR=$2
+fi
+
+[[ -d $BUILD_DIR ]] && rm -rfv $BUILD_DIR
+mkdir $BUILD_DIR && cd $BUILD_DIR
+
+echo "Release conteiner docker-registry version 1.0"
 git clone git@github.com:smilart/docker-registry.git
 
-docker-registry (1.0)
 docker build --rm=true --tag="localhost:5000/repos:1.0" ./docker-registry
 docker tag localhost:5000/repos:1.0 localhost:5000/repos:latest
-docker run -d -p 5000:5000 --name="main_container" repos
+docker run -d -p 5000:5000 --name="main_container" localhost:5000/repos
 
+for K in "${!CONT[@]}"; do 
+    echo "Release conteiner $K version ${CONT[$K]}"
+    git clone $SCM/$K.git
+    docker build --rm=true --tag="localhost:5000/$K:${CONT[$K]}" ./$K/
+    docker tag  localhost:5000/$K:${CONT[$K]} localhost:5000/$K:latest
+    docker push localhost:5000/$K
+done
 
-docker.smilart_base (1.0)
-docker.java (1.7u60)
-docker.zookeeper (3.4.6)
-docker.osgi (4.4.1)
-
-docker.mongodb (2.4.10)
-docker.rabbitmq (3.3.5-1)
-
-docker.service (1.0)
-docker.samba (1.0)
-
-git clone ....
-docker build --rm=true --tag="localhost:5000/smilart_base:1.0" ./docker.smilart_base/
-docker tag  localhost:5000/smilart_base:1.0 localhost:5000/smilart_base:latest
-docker push localhost:5000/smilart_base
-
-
-docker export main_container > /tmp/repos.tar
+cd ..
+[[ ! -d $TARGET_DIR ]] && mkdir -pv $TARGET_DIR
+docker export main_container > $TARGET_DIR/repos.tar
 
 docker stop main_container
 docker rm main_container
 docker rmi $(docker images -q)
-
-
-
 

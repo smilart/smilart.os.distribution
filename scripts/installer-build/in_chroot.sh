@@ -17,7 +17,6 @@ apt-get update --yes
 
 echo "debian-live-smilart" > /etc/hostname
 
-
 # apt-cache search linux-image
 
 apt-get install --no-install-recommends --yes \

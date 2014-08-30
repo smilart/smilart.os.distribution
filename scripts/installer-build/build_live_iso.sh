@@ -35,8 +35,11 @@ wget https://pypi.python.org/packages/source/u/urwid/urwid-1.2.1.tar.gz -P chroo
 (cd /tmp/licenseencryptiontool/nodeinfo && make)
 mkdir -p chroot/var/lib/smilart_srv/utils && cp -pv /tmp/licenseencryptiontool/nodeinfo/dist/Debug/GNU-Linux-x86/nodeinfo chroot/var/lib/smilart_srv/utils/nodeinfo
 
+echo "Building Docker-conteiners"
+source ../repo_conteiner.sh docker chroot/var/lib/smilart_srv/repos
 
-chroot chroot /bin/bash -c "/tmp/in_chroot.sh $ARCH" 
+echo "Setup chroot"
+chroot chroot /bin/bash -c "/tmp/in_chroot.sh $ARCH"
 
 cp -pv ../to_iso/default.nginx chroot/etc/nginx/sites-available/default
 
@@ -58,7 +61,6 @@ cp chroot/usr/lib/syslinux/isolinux.bin image/isolinux/ &&
 cp chroot/usr/lib/syslinux/menu.c32 image/isolinux/ && 
 cp chroot/usr/lib/syslinux/hdt.c32 image/isolinux/ && 
 cp /boot/memtest86+.bin image/live/memtest
-
 
 cd image && 
 genisoimage -rational-rock -volid "Debian Live" -cache-inodes -joliet -full-iso9660-filenames -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -output ../debian-live-$ARCH.iso . && 
