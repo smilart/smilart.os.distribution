@@ -36,7 +36,7 @@ wget https://pypi.python.org/packages/source/u/urwid/urwid-1.2.1.tar.gz -P chroo
 mkdir -p chroot/var/lib/smilart_srv/utils && cp -pv /tmp/licenseencryptiontool/nodeinfo/dist/Debug/GNU-Linux-x86/nodeinfo chroot/var/lib/smilart_srv/utils/nodeinfo
 
 echo "Building Docker-conteiners"
-source ../repo_conteiner.sh docker chroot/var/lib/smilart_srv/repos
+source ../repo_container.sh docker chroot/var/lib/smilart_srv/repos
 
 echo "Setup chroot"
 chroot chroot /bin/bash -c "/tmp/in_chroot.sh $ARCH"
