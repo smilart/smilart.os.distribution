@@ -1,0 +1,42 @@
+#cloud-config
+hostname: __hostname__
+ssh_authorized_keys:
+    - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDDKTH8gP+XY6VMwY3eaggnFp6chHH6vUi3oL06qDIIxzgwiIFjrlFxGq9MwBKFfun924RUCs9FJYbwRNTmywS0aAl6wtS9nePz4YuTXqVt+G+OLKRgLZ3NR3G17De89vVmYs3i7T9XL/THQaV2lxdhmbrh7aVZM2FrVvrnC1XkCz2m89VHtWPhzSe0aJAoU+wlSz9fSvbqZWRyldq0Qw/ubawMFt3d2RckQZGKuIc9DZlp9APlcJfYjMPKcleoJS9E27Csz7pO8JCcSl2IOOYsR3jdKL2gIuDxIPvn+rk6OmEGMKrIqcb8lCBIg0XwP6vLKf6k9exeyOIBgca4yYsh root@station358
+write_files:
+    - path: /etc/systemd/network/static.network
+      permissions: 0644
+      content: |
+        [Match]
+        Name=__name__
+
+        [Network]
+        Address=__ip__
+        Gateway=__gateway__
+    - path: /etc/resolv.conf
+      permissions: 0644
+      content: |
+        nameserver __dns__
+users:
+    - name: smilart
+      passwd: smilart
+      groups:
+        - sudo
+        - docker
+coreos:
+    update:
+        reboot-strategy: off
+        server: __updateServer__
+        group: stable
+#    units:
+#        - name: docker-redis.service
+#        command: start
+#        content: |
+#          [Unit]
+#          Description=Redis container
+#          Author=Me
+#          After=docker.service
+#
+#          [Service]
+#          Restart=always
+#          ExecStart=/usr/bin/docker start -a redis_server
+#          ExecStop=/usr/bin/docker stop -t 2 redis_server
