@@ -27,6 +27,20 @@ coreos:
         reboot-strategy: off
         server: __updateServer__
         group: stable
+    units:
+        -name: mongodb.service
+        command: start
+        content: |
+           [Unit]
+           Description=MongoDB container
+           After=docker.service
+
+           [Service]
+           TimeoutStartSec=0
+           ExecStartPre=/bin/bash -c "mkdir -p /data/db"
+           ExecStart=/bin/bash -c "/usr/bin/docker start mongodb || /usr/bin/docker run --name='mongodb' --net='host' -v /data/db:/data/db localhost:5000/mongodb /usr/bin/mongod"
+           ExecStop=/usr/bin/docker stop mongodb
+
 #    units:
 #        - name: docker-redis.service
 #        command: start
