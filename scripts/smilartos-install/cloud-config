@@ -80,6 +80,23 @@ coreos:
 	  ExecStart=/bin/bash -c "/usr/bin/docker start -a samba || /usr/bin/docker run --name='samba' --net='host' localhost:5000/samba"
 	  ExecStop=/usr/bin/docker stop samba
 
+	-name: service.service
+	command: start
+	content: |
+	  [Unit]
+	  Description=Service container
+	  After=docker.service
+
+	  [Service]
+	  TimeoutStartSec=0
+	  ExecStartPre=/bin/bash -c "mkdir -p /data/osgi_logs"
+	  ExecStartPre=/bin/bash -c "mkdir -p /data/felix_cache"
+	  ExecStartPre=/bin/bash -c "mkdir -p /etc/osgi"
+	  ExecStartPre=/bin/bash -c "mkdir -p /data/rabbitmq"
+	  ExecStartPre=/bin/bash -c "mkdir -p /data/db"
+	  ExecStart=/bin/bash -c "/usr/bin/docker start -a service || /usr/bin/docker run --name='service' --net='host' -v /data/osgi_logs:/data/osgi_logs -v /etc/osgi:/etc/osgi -v /data/db:/data/db -v /data/rabbitmq:/var/lib/rabbitmq --privileged localhost:5000/service"
+	  ExecStop=/usr/bin/docker stop service
+
 #    units:
 #        - name: docker-redis.service
 #        command: start
