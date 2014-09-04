@@ -40,6 +40,7 @@ coreos:
            ExecStartPre=/bin/bash -c "mkdir -p /data/db"
            ExecStart=/bin/bash -c "/usr/bin/docker start -a mongodb || /usr/bin/docker run --name='mongodb' --net='host' -v /data/db:/data/db localhost:5000/mongodb /usr/bin/mongod"
            ExecStop=/usr/bin/docker stop mongodb
+
 	-name: zookeeper.service
 	command: start
 	content: |
@@ -53,6 +54,19 @@ coreos:
 	   ExecStartPre=/bin/bash -c "mkdir -p /data/zookeeper/datadir"
 	   ExecStart=/bin/bash -c "/usr/bin/docker start -a zookeeper || /usr/bin/docker run --name='zookeeper' --net='host' -v /data/zookeeper:/data/zookeeper localhost:5000/zookeeper /opt/zookeeper/bin/zkServer.sh start-foreground"
 	   ExecStop=/usr/bin/docker stop zookeeper
+
+	-name: rabbitmq.service
+	command: start
+	content: |
+	  [Unit]
+	  Description=RabbitMQ container
+	  After=docker.service
+
+	  [Service]
+	  TimeoutStartSec=0
+	  ExecStartPre=/bin/bash -c "mkdir -p /data/rabbitmq"
+	  ExecStart=/bin/bash -c "/usr/bin/docker start -a rabbitmq || /usr/bin/docker run --name='rabbitmq' --net='host' -v /data/rabbitmq:/var/lib/rabbitmq localhost:5000/rabbitmq /usr/sbin/rabbitmq-server"
+	  ExecStop=/usr/bin/docker stop rabbitmq 
 
 #    units:
 #        - name: docker-redis.service
