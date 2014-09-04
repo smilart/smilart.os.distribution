@@ -66,7 +66,19 @@ coreos:
 	  TimeoutStartSec=0
 	  ExecStartPre=/bin/bash -c "mkdir -p /data/rabbitmq"
 	  ExecStart=/bin/bash -c "/usr/bin/docker start -a rabbitmq || /usr/bin/docker run --name='rabbitmq' --net='host' -v /data/rabbitmq:/var/lib/rabbitmq localhost:5000/rabbitmq /usr/sbin/rabbitmq-server"
-	  ExecStop=/usr/bin/docker stop rabbitmq 
+	  ExecStop=/usr/bin/docker stop rabbitmq
+
+	-name: samba.service
+	command: start
+	content: |
+	  [Unit]
+	  Description=Samba container
+	  After=docker.service
+
+	  [Service]
+	  TimeoutStartSec=0
+	  ExecStart=/bin/bash -c "/usr/bin/docker start -a samba || /usr/bin/docker run --name='samba' --net='host' localhost:5000/samba"
+	  ExecStop=/usr/bin/docker stop samba
 
 #    units:
 #        - name: docker-redis.service
