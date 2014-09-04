@@ -38,8 +38,21 @@ coreos:
            [Service]
            TimeoutStartSec=0
            ExecStartPre=/bin/bash -c "mkdir -p /data/db"
-           ExecStart=/bin/bash -c "/usr/bin/docker start mongodb || /usr/bin/docker run --name='mongodb' --net='host' -v /data/db:/data/db localhost:5000/mongodb /usr/bin/mongod"
+           ExecStart=/bin/bash -c "/usr/bin/docker start -a mongodb || /usr/bin/docker run --name='mongodb' --net='host' -v /data/db:/data/db localhost:5000/mongodb /usr/bin/mongod"
            ExecStop=/usr/bin/docker stop mongodb
+	-name: zookeeper.service
+	command: start
+	content: |
+	   [Unit]
+	   Description=Zookeeper container
+	   After=docker.service
+
+	   [Service]
+	   TimeoutStartSec=0
+	   ExecStartPre=/bin/bash -c "mkdir -p /data/zookeeper/logdir"
+	   ExecStartPre=/bin/bash -c "mkdir -p /data/zookeeper/datadir"
+	   ExecStart=/bin/bash -c "/usr/bin/docker start -a zookeeper || /usr/bin/docker run --name='zookeeper' --net='host' -v /data/zookeeper:/data/zookeeper localhost:5000/zookeeper /opt/zookeeper/bin/zkServer.sh start-foreground"
+	   ExecStop=/usr/bin/docker stop zookeeper
 
 #    units:
 #        - name: docker-redis.service
