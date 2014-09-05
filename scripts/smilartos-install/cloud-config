@@ -134,7 +134,7 @@ coreos:
 
 	  [Service]
 	  TimeoutStartSec=0
-	  ExecStartPre=/bin/bash -c "/usr/bin/docker images |grep smilart_repo || cat /var/lib/smilart_srv/repos/repos.tar | sudo docker import - smilart_repos:latest"
+	  ExecStartPre=/bin/bash -c "/usr/bin/docker images |grep smilart_repo || cat /var/lib/smilart_srv/repos/repos.tar | sudo docker import - smilart_repos:latest || $(/usr/bin/mount -L SMILART_OS /mnt && echo "Copying Smilart repository file..." > /dev/tty1 && cat /mnt/image/repos.tar.part-* > /var/lib/smilart_srv/repos/repos.tar && /usr/sbin/reboot)"
 	  ExecStart=/bin/bash -c "/usr/bin/docker start -a smilart_repos || /usr/bin/docker run --name='smilart_repos' -p 5000:5000 -p 55556:55556 smilart_repos /usr/bin/supervisord"
 	  ExecStop=/usr/bin/docker stop smilart_repos
 	  ExecStopPost=/bin/bash -c "/usr/bin/systemctl stop docker-$(docker ps -a --no-trunc |grep smilart_repos |awk '{print $1}').scope"
