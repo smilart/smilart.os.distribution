@@ -30,6 +30,7 @@ coreos:
     units:
         -name: mongodb.service
         command: start
+	enable: True
         content: |
            [Unit]
            Description=MongoDB container
@@ -44,6 +45,7 @@ coreos:
 
 	-name: zookeeper.service
 	command: start
+	enable: True
 	content: |
 	   [Unit]
 	   Description=Zookeeper container
@@ -59,6 +61,7 @@ coreos:
 
 	-name: rabbitmq.service
 	command: start
+	enable: True
 	content: |
 	  [Unit]
 	  Description=RabbitMQ container
@@ -73,6 +76,7 @@ coreos:
 
 	-name: samba.service
 	command: start
+	enable: True
 	content: |
 	  [Unit]
 	  Description=Samba container
@@ -86,6 +90,7 @@ coreos:
 
 	-name: service.service
 	command: start
+	enable: True
 	content: |
 	  [Unit]
 	  Description=Service container
@@ -104,6 +109,7 @@ coreos:
 
 	-name: osgi.service
 	command: start
+	enable: True
 	content: |
 	  [Unit]
 	  Description=OSGI container
