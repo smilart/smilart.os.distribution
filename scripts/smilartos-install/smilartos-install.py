@@ -252,13 +252,13 @@ class Installator:
 
 
 	def installCoreOS(self, button):
-		command =  self.pathToCoreosInstall + " -d dba -C stable -c " + self.pathToCloudConfig
+		command =  self.pathToCoreosInstall + " -d /dev/xvda -C stable -c " + self.pathToCloudConfig
 		proc = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
 		out, err = proc.communicate()
 		code = proc.returncode
 		if code != 0:
 			body = [urwid.Text(self.titleMenu), urwid.Divider()]
-			text = u"CoreOS didn't install!\n + " + out + "\n " + err
+			text = u'CoreOS did not install!\n' + out
 			done = urwid.Button(u'Выход')
 			urwid.connect_signal(done, 'click', self.exit_program)
 			body.append(urwid.Text(text))
