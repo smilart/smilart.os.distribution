@@ -18,15 +18,128 @@ write_files:
         nameserver __dns__
 users:
     - name: smilart
-      passwd: smilart
+      passwd: $6$gVubw/ntzKleLlj$NmgI0qU/QE7lbepWbYCSlQCTZ/XXEWuVWjGCtiuQUxkWDgYQM1/v2.5KMAlYBohULpboZV.tzUfq9gbfnxoRZ/
       groups:
         - sudo
         - docker
 coreos:
     update:
         reboot-strategy: off
-        server: __updateServer__
+        server: __updateserver__
         group: stable
+    units:
+        -name: mongodb.service
+        command: start
+	enable: True
+        content: |
+           [Unit]
+           Description=MongoDB container
+           After=docker.service
+
+           [Service]
+           TimeoutStartSec=0
+           ExecStartPre=/bin/bash -c "mkdir -p /data/db"
+           ExecStart=/bin/bash -c "/usr/bin/docker start -a mongodb || /usr/bin/docker run --name='mongodb' --net='host' -v /data/db:/data/db localhost:5000/mongodb /usr/bin/mongod"
+           ExecStop=/usr/bin/docker stop mongodb
+           ExecStopPost=/bin/bash -c "/usr/bin/systemctl stop docker-$(docker ps -a --no-trunc |grep mongodb |awk '{print $1}').scope"
+
+	-name: zookeeper.service
+	command: start
+	enable: True
+	content: |
+	   [Unit]
+	   Description=Zookeeper container
+	   After=docker.service
+
+	   [Service]
+	   TimeoutStartSec=0
+	   ExecStartPre=/bin/bash -c "mkdir -p /data/zookeeper/logdir"
+	   ExecStartPre=/bin/bash -c "mkdir -p /data/zookeeper/datadir"
+	   ExecStart=/bin/bash -c "/usr/bin/docker start -a zookeeper || /usr/bin/docker run --name='zookeeper' --net='host' -v /data/zookeeper:/data/zookeeper localhost:5000/zookeeper /opt/zookeeper/bin/zkServer.sh start-foreground"
+	   ExecStop=/usr/bin/docker stop zookeeper
+	   ExecStopPost=/bin/bash -c "/usr/bin/systemctl stop docker-$(docker ps -a --no-trunc |grep zookeeper |awk '{print $1}').scope"
+
+	-name: rabbitmq.service
+	command: start
+	enable: True
+	content: |
+	  [Unit]
+	  Description=RabbitMQ container
+	  After=docker.service
+
+	  [Service]
+	  TimeoutStartSec=0
+	  ExecStartPre=/bin/bash -c "mkdir -p /data/rabbitmq"
+	  ExecStart=/bin/bash -c "/usr/bin/docker start -a rabbitmq || /usr/bin/docker run --name='rabbitmq' --net='host' -v /data/rabbitmq:/var/lib/rabbitmq localhost:5000/rabbitmq /usr/sbin/rabbitmq-server"
+	  ExecStop=/usr/bin/docker stop rabbitmq
+	  ExecStopPost=/bin/bash -c "/usr/bin/systemctl stop docker-$(docker ps -a --no-trunc |grep rabbitmq |awk '{print $1}').scope"
+
+	-name: samba.service
+	command: start
+	enable: True
+	content: |
+	  [Unit]
+	  Description=Samba container
+	  After=docker.service
+
+	  [Service]
+	  TimeoutStartSec=0
+	  ExecStart=/bin/bash -c "/usr/bin/docker start -a samba || /usr/bin/docker run --name='samba' --net='host' localhost:5000/samba"
+	  ExecStop=/usr/bin/docker stop samba
+	  ExecStopPost=/bin/bash -c "/usr/bin/systemctl stop docker-$(docker ps -a --no-trunc |grep samba |awk '{print $1}').scope"
+
+	-name: service.service
+	command: start
+	enable: True
+	content: |
+	  [Unit]
+	  Description=Service container
+	  After=docker.service
+
+	  [Service]
+	  TimeoutStartSec=0
+	  ExecStartPre=/bin/bash -c "mkdir -p /data/osgi_logs"
+	  ExecStartPre=/bin/bash -c "mkdir -p /data/felix_cache"
+	  ExecStartPre=/bin/bash -c "mkdir -p /etc/osgi"
+	  ExecStartPre=/bin/bash -c "mkdir -p /data/rabbitmq"
+	  ExecStartPre=/bin/bash -c "mkdir -p /data/db"
+	  ExecStart=/bin/bash -c "/usr/bin/docker start -a service || /usr/bin/docker run --name='service' --net='host' -v /data/osgi_logs:/data/osgi_logs -v /etc/osgi:/etc/osgi -v /data/db:/data/db -v /data/rabbitmq:/var/lib/rabbitmq --privileged localhost:5000/service"
+	  ExecStop=/usr/bin/docker stop service
+	  ExecStopPost=/bin/bash -c "/usr/bin/systemctl stop docker-$(docker ps -a --no-trunc |grep service |awk '{print $1}').scope"
+
+	-name: osgi.service
+	command: start
+	enable: True
+	content: |
+	  [Unit]
+	  Description=OSGI container
+	  After=docker.service
+
+	  [Service]
+	  TimeoutStartSec=0
+	  ExecStartPre=/bin/bash -c "mkdir -p /data/osgi_logs"
+	  ExecStartPre=/bin/bash -c "mkdir -p /data/felix_cache"
+	  ExecStartPre=/bin/bash -c "mkdir -p /etc/osgi"
+	  ExecStart=/bin/bash -c "/usr/bin/docker start -a osgi || /usr/bin/docker run --name='osgi' --net='host' -v /data/osgi_logs:/var/log/osgi -v /etc/osgi:/etc/osgi -v /data/felix_cache:/var/lib/osgi --privileged localhost:5000/osgi"
+	  ExecStop=/usr/bin/docker stop osgi
+	  ExecStopPost=/bin/bash -c "/usr/bin/systemctl stop docker-$(docker ps -a --no-trunc |grep osgi |awk '{print $1}').scope"
+
+	-name: repos.service
+	command: start
+	enable: True
+	content: |
+	  [Unit]
+	  Description=Repos container
+	  After=docker.service
+
+	  [Service]
+	  TimeoutStartSec=0
+	  ExecStartPre=/bin/bash -c "/usr/bin/docker images |grep smilart_repo || cat /var/lib/smilart_srv/repos/repos.tar | sudo docker import - smilart_repos:latest || $(/usr/bin/mount -L SMILART_OS /mnt && echo "Copying Smilart repository file..." > /dev/tty1 && cat /mnt/image/repos.tar.part-* > /var/lib/smilart_srv/repos/repos.tar && /usr/sbin/reboot)"
+	  ExecStart=/bin/bash -c "/usr/bin/docker start -a smilart_repos || /usr/bin/docker run --name='smilart_repos' -p 5000:5000 -p 55556:55556 smilart_repos /usr/bin/supervisord"
+	  ExecStop=/usr/bin/docker stop smilart_repos
+	  ExecStopPost=/bin/bash -c "/usr/bin/systemctl stop docker-$(docker ps -a --no-trunc |grep smilart_repos |awk '{print $1}').scope"
+
+
 #    units:
 #        - name: docker-redis.service
 #        command: start
