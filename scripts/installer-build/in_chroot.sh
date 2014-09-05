@@ -17,12 +17,10 @@ apt-get update --yes
 
 echo "debian-live-smilart" > /etc/hostname
 
-# apt-cache search linux-image
-
 apt-get install --no-install-recommends --yes \
-linux-image-3.2.0-4-$ARCH live-boot \
+linux-image-3.14-2-$ARCH live-boot \
 net-tools wireless-tools wpagui tcpdump wget ca-certificates openssh-server openssh-client iputils-ping inetutils-tools nginx \
-pciutils usbutils gparted ntfsprogs hfsprogs rsync dosfstools syslinux partclone nano pv python2.7 python2.7-dev mc bzip2 parted
+pciutils usbutils gparted hfsprogs rsync dosfstools syslinux partclone nano pv python2.7 python2.7-dev mc bzip2 parted
 
 export DEBIAN_FRONTEND=noninteractive
 apt-get -q -y install console-cyrillic
@@ -38,13 +36,9 @@ chmod +x /var/lib/smilart_srv/coreos/coreos-install
 echo -e "smilart\nsmilart" | passwd root
 echo "127.0.0.1		stable.release.core-os.net" >> /etc/hosts
 
-chmod 755 /etc/init.d/smilartos-install
-update-rc.d smilartos-install defaults
-
 rm -f /var/lib/dbus/machine-id && 
 apt-get clean && 
 #rm -rf /tmp/* && 
-rm /etc/resolv.conf && 
 umount -lf /proc && 
 umount -lf /sys && 
 umount -lf /dev/pts
