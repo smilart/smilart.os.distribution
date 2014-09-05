@@ -102,6 +102,23 @@ coreos:
 	  ExecStop=/usr/bin/docker stop service
 	  ExecStopPost=/bin/bash -c "/usr/bin/systemctl stop docker-$(docker ps -a --no-trunc |grep service |awk '{print $1}').scope"
 
+	-name: osgi.service
+	command: start
+	content: |
+	  [Unit]
+	  Description=OSGI container
+	  After=docker.service
+
+	  [Service]
+	  TimeoutStartSec=0
+	  ExecStartPre=/bin/bash -c "mkdir -p /data/osgi_logs"
+	  ExecStartPre=/bin/bash -c "mkdir -p /data/felix_cache"
+	  ExecStartPre=/bin/bash -c "mkdir -p /etc/osgi"
+	  ExecStart=/bin/bash -c "/usr/bin/docker start -a osgi || /usr/bin/docker run --name='osgi' --net='host' -v /data/osgi_logs:/var/log/osgi -v /etc/osgi:/etc/osgi -v /data/felix_cache:/var/lib/osgi --privileged localhost:5000/osgi"
+	  ExecStop=/usr/bin/docker stop osgi
+	  ExecStopPost=/bin/bash -c "/usr/bin/systemctl stop docker-$(docker ps -a --no-trunc |grep osgi |awk '{print $1}').scope"
+
+
 #    units:
 #        - name: docker-redis.service
 #        command: start
