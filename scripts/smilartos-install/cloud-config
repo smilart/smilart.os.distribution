@@ -124,6 +124,21 @@ coreos:
 	  ExecStop=/usr/bin/docker stop osgi
 	  ExecStopPost=/bin/bash -c "/usr/bin/systemctl stop docker-$(docker ps -a --no-trunc |grep osgi |awk '{print $1}').scope"
 
+	-name: repos.service
+	command: start
+	enable: True
+	content: |
+	  [Unit]
+	  Description=Repos container
+	  After=docker.service
+
+	  [Service]
+	  TimeoutStartSec=0
+	  ExecStartPre=/bin/bash -c "/usr/bin/docker images |grep smilart_repo || cat /var/lib/smilart_srv/repos/repos.tar | sudo docker import - smilart_repos:latest"
+	  ExecStart=/bin/bash -c "/usr/bin/docker start -a smilart_repos || /usr/bin/docker run --name='smilart_repos' -p 5000:5000 -p 55556:55556 smilart_repos /usr/bin/supervisord"
+	  ExecStop=/usr/bin/docker stop smilart_repos
+	  ExecStopPost=/bin/bash -c "/usr/bin/systemctl stop docker-$(docker ps -a --no-trunc |grep smilart_repos |awk '{print $1}').scope"
+
 
 #    units:
 #        - name: docker-redis.service
