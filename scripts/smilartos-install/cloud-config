@@ -25,7 +25,7 @@ users:
 coreos:
     update:
         reboot-strategy: off
-        server: __updateServer__
+        server: __updateserver__
         group: stable
     units:
         -name: mongodb.service
