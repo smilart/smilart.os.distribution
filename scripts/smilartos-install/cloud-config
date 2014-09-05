@@ -18,7 +18,7 @@ write_files:
         nameserver __dns__
 users:
     - name: smilart
-      passwd: smilart
+      passwd: $6$gVubw/ntzKleLlj$NmgI0qU/QE7lbepWbYCSlQCTZ/XXEWuVWjGCtiuQUxkWDgYQM1/v2.5KMAlYBohULpboZV.tzUfq9gbfnxoRZ/
       groups:
         - sudo
         - docker
