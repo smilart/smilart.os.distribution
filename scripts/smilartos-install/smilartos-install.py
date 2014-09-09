@@ -272,7 +272,7 @@ class Installator:
 			urwid.connect_signal(copy, 'click', self.copyServiceContainer)
 
 			done = urwid.Button(u'Выход')
-			urwid.connect_signal(done, 'click', self.exit_program())
+			urwid.connect_signal(done, 'click', self.exit_program)
 			body.append(urwid.Text(text))
 			body.append(urwid.Divider())
 			body.append(urwid.AttrMap(copy, None, focus_map='reversed'))
